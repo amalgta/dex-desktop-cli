@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+  <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+  <property name="ROLLING_FILE_NAME_PATTERN"
+    value="logback/${app.name}.%d{yyyy-MM-dd}.%i.log"/>
+  <property name="LOG_FILE_MAX_HISTORY"
+    value="1"/>
+  <property resource="application.properties"/>
+  <property name="FILE_LOG_PATTERN"
+    value="%d{${app.logging.time-stamp-pattern}}&#x9;%-5level&#x9;%logger{50}&#x9;%msg&#x9;%X{MDC_GUID}%n"/>
+  <property name="LOG_FILE"
+    value="logback/${app.name}.log"/>
+  <root level="${app.logging.level}">
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>
