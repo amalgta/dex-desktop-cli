@@ -1,5 +1,6 @@
 package styx.studio.dex.config;
 
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -23,6 +24,11 @@ public class SpringShellConfig {
   @Bean
   public Shell shellHelper(@Lazy Terminal terminal) {
     return new Shell(terminal);
+  }
+
+  @Bean
+  public JaroWinklerDistance jaroWinklerDistance() {
+    return new JaroWinklerDistance();
   }
 
   @Bean

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import styx.studio.dex.common.utils.StringTemplate;
 import styx.studio.dex.domain.error.Exte;
 import styx.studio.dex.domain.metadata.MovieFileMetadata;
 import styx.studio.dex.service.MovieFileMetadataGenerator;
@@ -54,7 +55,11 @@ public class Sort {
                     return;
                   }
                   MovieFileMetadata metadata = movieFileMetadataGenerator.generateMetadata(file);
-                  write(metadata, targetDirectory, file);
+                  if (metadata != null) {
+                    write(metadata, targetDirectory, file);
+                  } else {
+                    // add to error report
+                  }
                 });
       } catch (IOException e) {
         throw e;
@@ -67,18 +72,19 @@ public class Sort {
 
   private void write(MovieFileMetadata metadata, String targetDirectory, File file) {
     try {
+      StringTemplate directory = new StringTemplate("$target_directory$\\$original_language$");
+      StringTemplate fileName = new StringTemplate("$title$ [$year$].$extension$");
+      directory.setAttribute("target_directory", targetDirectory);
+      directory.setAttribute("original_language", metadata.getOriginalLanguage());
+      fileName.setAttribute("title", metadata.getTitle());
+      fileName.setAttribute("year", metadata.getYear().toString());
+      fileName.setAttribute("extension", metadata.getFileExtension());
       FileUtils.moveFile(
           file,
           new File(
-              targetDirectory
+              directory.toString()
                   + File.separatorChar
-                  + metadata.getOriginalLanguage()
-                  + File.separatorChar
-                  + metadata.getTitle()
-                  + " ["
-                  + metadata.getYear()
-                  + "]"
-                  + metadata.getFileExtension()));
+                  + fileName.toString().replaceAll("[:\\\\/*?|<>]", "-")));
     } catch (IOException e) {
       e.printStackTrace();
     }

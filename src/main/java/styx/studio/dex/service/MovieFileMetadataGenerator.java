@@ -7,9 +7,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import retrofit2.Response;
@@ -21,6 +23,7 @@ public class MovieFileMetadataGenerator {
 
   @Autowired private PatternRepository patternRepository;
   @Autowired private SearchService searchService;
+  @Autowired private JaroWinklerDistance jaroWinklerDistance;
 
   public MovieFileMetadata generateMetadata(File file) {
     MovieFileMetadata metadata = null;
@@ -49,10 +52,35 @@ public class MovieFileMetadataGenerator {
                   metadata.getTitle(), null, "", "", false, metadata.getYear(), metadata.getYear())
               .execute();
       if (response.isSuccessful()) {
+        MovieFileMetadata finalMetadata = metadata;
         List<BaseMovie> movie = Objects.requireNonNull(response.body()).results;
-        BaseMovie m = Objects.requireNonNull(movie).stream().findFirst().get();
-        metadata.setOriginalLanguage(getOriginalLanguage(m.original_language));
-        metadata.setId(m.id);
+        Optional<BaseMovie> m;
+        if (movie.isEmpty()) return null;
+        if (movie.stream().anyMatch(t -> t.title.equals(finalMetadata.getTitle().trim()))) {
+          m =
+              movie.stream()
+                  .filter(t -> t.title.equals(finalMetadata.getTitle().trim()))
+                  .findFirst();
+        } else {
+          m =
+              movie.stream()
+                  .min(
+                      (movie1, movie2) -> {
+                        double movie1Distance =
+                            jaroWinklerDistance.apply(
+                                movie1.title, finalMetadata.getTitle().trim());
+                        double movie2Distance =
+                            jaroWinklerDistance.apply(
+                                movie2.title, finalMetadata.getTitle().trim());
+                        if (movie1Distance < movie2Distance) return -1;
+                        if (movie1Distance > movie1Distance) return 1;
+                        return 0;
+                      });
+        }
+        BaseMovie bm = m.get();
+        metadata.setTitle(bm.title);
+        metadata.setOriginalLanguage(getOriginalLanguage(bm.original_language));
+        metadata.setId(bm.id);
       } else {
       }
     } catch (Exception e) {

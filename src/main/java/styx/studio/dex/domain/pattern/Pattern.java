@@ -28,4 +28,7 @@ public class Pattern {
 
   @Column(name = "pattern")
   private String pattern;
+
+  @Column(name = "sample")
+  private String sample;
 }
