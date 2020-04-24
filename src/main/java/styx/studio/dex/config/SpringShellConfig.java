@@ -11,7 +11,9 @@ import org.jline.utils.AttributedStyle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.shell.jline.JLineShellAutoConfiguration;
+import styx.studio.dex.domain.error.ErrorReport;
 import styx.studio.dex.shell.ProgressBar;
 import styx.studio.dex.shell.ProgressCounter;
 import styx.studio.dex.shell.PromptColor;
@@ -29,6 +31,12 @@ public class SpringShellConfig {
   @Bean
   public JaroWinklerDistance jaroWinklerDistance() {
     return new JaroWinklerDistance();
+  }
+
+  @Bean
+  @Scope(scopeName = "prototype")
+  ErrorReport errorReport() {
+    return new ErrorReport();
   }
 
   @Bean
