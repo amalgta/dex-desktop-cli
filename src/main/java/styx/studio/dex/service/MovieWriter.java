@@ -2,13 +2,13 @@ package styx.studio.dex.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -93,7 +93,8 @@ public class MovieWriter {
                   .removeAll("[:\\\\/*?|<>]")
                   .build()
                   .get();
-          FileUtils.moveFile(sourceFile, new File(duplicateFolder, duplicateFileNameSourceFile));
+          Files.move(
+              sourceFile.toPath(), new File(duplicateFolder, duplicateFileNameSourceFile).toPath());
         }
       } else {
         File outputFile = new File(outputCompleteDirectory, outputFileName);
@@ -121,10 +122,12 @@ public class MovieWriter {
                   .removeAll("[:\\\\/*?|<>]")
                   .build()
                   .get();
-          FileUtils.moveFile(sourceFile, new File(duplicateFolder, duplicateFileNameSourceFile));
-          FileUtils.moveFile(outputFile, new File(duplicateFolder, duplicateFileNameTargetFile));
+          Files.move(
+              sourceFile.toPath(), new File(duplicateFolder, duplicateFileNameSourceFile).toPath());
+          Files.move(
+              outputFile.toPath(), new File(duplicateFolder, duplicateFileNameTargetFile).toPath());
         } else {
-          FileUtils.moveFile(sourceFile, outputFile);
+          Files.move(sourceFile.toPath(), outputFile.toPath());
         }
       }
     } catch (IOException e) {
