@@ -8,7 +8,7 @@ public class MetadataMapper implements Mapper<MovieFileMetadata> {
 
   private HashMap<String, String> map = new HashMap<>();
 
-  MetadataMapper(MovieFileMetadata metadata) {
+  public MetadataMapper(MovieFileMetadata metadata) {
     map.put("original_language", metadata.getOriginalLanguage());
     map.put("title", metadata.getTitle());
     map.put("year", metadata.getYear().toString());
