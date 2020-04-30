@@ -34,7 +34,9 @@ public class StringTemplate {
   }
 
   public void map(Mapper metadataMapper) {
-    metadataMapper.get().forEach((key, value) -> setAttribute(key.toString(), value.toString()));
+    metadataMapper
+        .get()
+        .forEach((key, value) -> setAttribute(key.toString(), value == null ? "" : toString()));
   }
 
   public static class StringTemplateBuilder {
