@@ -2,13 +2,13 @@ package styx.studio.dex.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -96,7 +96,8 @@ public class MovieWriter {
           File targetFile = new File(duplicateFolder, duplicateFileNameSourceFile);
           shell.info(
               "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), targetFile.getName());
-          FileUtils.moveFileToDirectory(sourceFile, targetFile, true);
+          Files.createDirectories(targetFile.toPath());
+          Files.move(sourceFile.toPath(), targetFile.toPath());
         }
       } else {
         File outputFile = new File(outputCompleteDirectory, outputFileName);
@@ -124,12 +125,21 @@ public class MovieWriter {
                   .removeAll("[:\\\\/*?|<>]")
                   .build()
                   .get();
-          FileUtils.moveFileToDirectory(
-              sourceFile, new File(duplicateFolder, duplicateFileNameSourceFile), true);
-          FileUtils.moveFileToDirectory(
-              outputFile, new File(duplicateFolder, duplicateFileNameTargetFile), true);
+          File targetFile1 = new File(duplicateFolder, duplicateFileNameSourceFile);
+          File targetFile2 = new File(duplicateFolder, duplicateFileNameTargetFile);
+          shell.info(
+              "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), targetFile1.getName());
+          Files.createDirectories(targetFile1.toPath());
+          Files.move(sourceFile.toPath(), targetFile1.toPath());
+          shell.info(
+              "{} ({}) -> {}", outputFile.getName(), metadata.getTitle(), targetFile2.getName());
+          Files.createDirectories(targetFile2.toPath());
+          Files.move(outputFile.toPath(), targetFile2.toPath());
         } else {
-          FileUtils.moveFileToDirectory(sourceFile, outputFile, true);
+          shell.info(
+              "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), outputFile.getName());
+          Files.createDirectories(outputFile.toPath());
+          Files.move(sourceFile.toPath(), outputFile.toPath());
         }
       }
     } catch (IOException e) {
