@@ -3,6 +3,7 @@ package styx.studio.dex.shell;
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Value;
 
 public class Shell {
@@ -20,6 +21,7 @@ public class Shell {
   private String errorColor;
 
   private Terminal terminal;
+
   @Value("${app.logging.time-stamp-pattern}")
   private String timestampPattern;
 
@@ -101,8 +103,12 @@ public class Shell {
    *
    * @param message message to print
    */
-  public void info(String message) {
-    print(message, Level.INFO);
+  public void info(String message, String... params) {
+    print(MessageFormatter.arrayFormat(message, params).getMessage(), Level.INFO);
+  }
+
+  public static String format(String message, Object... params) {
+    return MessageFormatter.arrayFormat(message, params).getMessage();
   }
 
   /**

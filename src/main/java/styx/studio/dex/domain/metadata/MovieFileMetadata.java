@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import styx.studio.dex.shell.Shell;
 
 @Getter
 @Setter
@@ -15,4 +16,15 @@ public class MovieFileMetadata {
   protected Integer year;
   protected String originalLanguage;
   protected String fileExtension;
+
+  @Override
+  public String toString() {
+    return Shell.format(
+        "id:{},title:{},year:{},originalLanguage:{},fileExtension:{}",
+        getId(),
+        getTitle(),
+        getYear(),
+        getOriginalLanguage(),
+        getFileExtension());
+  }
 }

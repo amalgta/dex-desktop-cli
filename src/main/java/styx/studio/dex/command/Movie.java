@@ -29,8 +29,15 @@ public class Movie {
       if (!directoryPath.toFile().exists()) {
         throw new IllegalArgumentException(directory + " doesn't exist.");
       }
+      shell.info("Starting sort");
+      shell.info("directory : {}", directory);
+      shell.info("targetDirectory : {}", targetDirectory);
       movieFinder.find(
-          directoryPath, (file, metadata) -> writer.write(file, metadata, targetDirectory));
+          directoryPath,
+          (file, metadata) -> {
+            shell.info("{} : {}", file.getName(), metadata.toString());
+            writer.write(file, metadata, targetDirectory);
+          });
     } catch (Exception e) {
       shell.error("Sort has failed", e);
     }
