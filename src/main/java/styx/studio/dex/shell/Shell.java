@@ -1,5 +1,6 @@
 package styx.studio.dex.shell;
 
+import java.util.Arrays;
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -132,6 +133,7 @@ public class Shell {
   public void error(String message, Throwable throwable) {
     print(message, Level.ERROR);
     print(throwable.toString(), Level.ERROR);
+    Arrays.stream(throwable.getStackTrace()).forEach(t -> print(t.toString(), Level.ERROR));
   }
 
   /**
