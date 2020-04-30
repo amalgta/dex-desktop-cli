@@ -96,7 +96,7 @@ public class MovieWriter {
           File targetFile = new File(duplicateFolder, duplicateFileNameSourceFile);
           shell.info(
               "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), targetFile.getName());
-          Files.createDirectories(targetFile.toPath());
+          Files.createDirectories(targetFile.getParentFile().toPath());
           Files.move(sourceFile.toPath(), targetFile.toPath());
         }
       } else {
@@ -129,16 +129,16 @@ public class MovieWriter {
           File targetFile2 = new File(duplicateFolder, duplicateFileNameTargetFile);
           shell.info(
               "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), targetFile1.getName());
-          Files.createDirectories(targetFile1.toPath());
+          Files.createDirectories(targetFile1.getParentFile().toPath());
           Files.move(sourceFile.toPath(), targetFile1.toPath());
           shell.info(
               "{} ({}) -> {}", outputFile.getName(), metadata.getTitle(), targetFile2.getName());
-          Files.createDirectories(targetFile2.toPath());
+          Files.createDirectories(targetFile2.getParentFile().toPath());
           Files.move(outputFile.toPath(), targetFile2.toPath());
         } else {
           shell.info(
               "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), outputFile.getName());
-          Files.createDirectories(outputFile.toPath());
+          Files.createDirectories(outputFile.getParentFile().toPath());
           Files.move(sourceFile.toPath(), outputFile.toPath());
         }
       }
