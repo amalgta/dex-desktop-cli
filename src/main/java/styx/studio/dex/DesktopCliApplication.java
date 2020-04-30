@@ -1,6 +1,5 @@
 package styx.studio.dex;
 
-import com.uwetrottmann.tmdb2.entities.MovieResultsPage;
 import com.uwetrottmann.tmdb2.services.SearchService;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.StringUtils;
-import retrofit2.Response;
 import styx.studio.dex.shell.Shell;
 
 @SpringBootApplication
@@ -21,7 +19,7 @@ public class DesktopCliApplication {
   @Autowired private SearchService searchService;
 
   @Value("${api.key}")
-  String tMDBApiKey;
+  private String tMDBApiKey;
 
   public static void main(String[] args) {
     SpringApplication.run(DesktopCliApplication.class, args);
@@ -36,11 +34,11 @@ public class DesktopCliApplication {
       String maskedKey = tMDBApiKey.replaceAll("\\b(\\w{2})\\w+(\\w{3})", "$1*******$2");
       shell.info("Api key : {}", maskedKey);
     }
-    Response<MovieResultsPage> response = null;
     try {
-      response =
-          searchService.movie("Kayamkulam Kochunni", null, "", "", false, 2018, 2018).execute();
-      if (response.isSuccessful()) {
+      if (searchService
+          .movie("Kayamkulam Kochunni", null, "", "", false, 2018, 2018)
+          .execute()
+          .isSuccessful()) {
         shell.success("Connection success");
       } else {
         throw new Exception("Api failure response");
