@@ -2,14 +2,13 @@ package styx.studio.dex.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -94,13 +93,10 @@ public class MovieWriter {
                   .removeAll("[:\\\\/*?|<>]")
                   .build()
                   .get();
-          Path targetFile = new File(duplicateFolder, duplicateFileNameSourceFile).toPath();
+          File targetFile = new File(duplicateFolder, duplicateFileNameSourceFile);
           shell.info(
-              "{} ({}) -> {}",
-              sourceFile.getName(),
-              metadata.getTitle(),
-              targetFile.toFile().getName());
-          Files.move(sourceFile.toPath(), targetFile);
+              "{} ({}) -> {}", sourceFile.getName(), metadata.getTitle(), targetFile.getName());
+          FileUtils.moveFileToDirectory(sourceFile, targetFile, true);
         }
       } else {
         File outputFile = new File(outputCompleteDirectory, outputFileName);
@@ -128,12 +124,12 @@ public class MovieWriter {
                   .removeAll("[:\\\\/*?|<>]")
                   .build()
                   .get();
-          Files.move(
-              sourceFile.toPath(), new File(duplicateFolder, duplicateFileNameSourceFile).toPath());
-          Files.move(
-              outputFile.toPath(), new File(duplicateFolder, duplicateFileNameTargetFile).toPath());
+          FileUtils.moveFileToDirectory(
+              sourceFile, new File(duplicateFolder, duplicateFileNameSourceFile), true);
+          FileUtils.moveFileToDirectory(
+              outputFile, new File(duplicateFolder, duplicateFileNameTargetFile), true);
         } else {
-          Files.move(sourceFile.toPath(), outputFile.toPath());
+          FileUtils.moveFileToDirectory(sourceFile, outputFile, true);
         }
       }
     } catch (IOException e) {
