@@ -126,8 +126,8 @@ public class Shell {
    *
    * @param message message to print
    */
-  public void error(String message) {
-    print(message, Level.ERROR);
+  public void error(String message, String... params) {
+    print(MessageFormatter.arrayFormat(message, params).getMessage(), Level.ERROR);
   }
 
   public void error(String message, Throwable throwable) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import styx.studio.dex.domain.error.ErrorReport;
 import styx.studio.dex.service.MovieFinder;
 import styx.studio.dex.service.MovieWriter;
 import styx.studio.dex.shell.Shell;
@@ -32,12 +33,28 @@ public class Movie {
       shell.info("Starting sort");
       shell.info("directory : {}", directory);
       shell.info("targetDirectory : {}", targetDirectory);
-      movieFinder.find(
-          directoryPath,
-          (file, metadata) -> {
-            shell.info("{} : {}", file.getName(), metadata.toString());
-            writer.write(file, metadata, targetDirectory);
-          });
+      ErrorReport errorReport =
+          movieFinder.find(
+              directoryPath,
+              (file, metadata) -> {
+                shell.info("{} : {}", file.getName(), metadata.toString());
+                writer.write(file, metadata, targetDirectory);
+              });
+      shell.success("Report :>");
+      errorReport
+          .getErrorList()
+          .keySet()
+          .forEach(
+              key -> {
+                shell.error("Type: {}", key.name());
+                errorReport
+                    .getErrorList()
+                    .get(key)
+                    .forEach(
+                        t -> {
+                          shell.error(t.getName());
+                        });
+              });
     } catch (Exception e) {
       shell.error("Sort has failed", e);
     }

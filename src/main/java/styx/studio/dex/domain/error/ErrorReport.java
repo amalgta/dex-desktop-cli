@@ -15,4 +15,8 @@ public class ErrorReport {
   public boolean report(ErrorCode errorCode, File file) {
     return errorList.computeIfAbsent(errorCode, k -> new ArrayList<>()).add(file);
   }
+
+  public HashMap<ErrorCode, List<File>> getErrorList() {
+    return errorList;
+  }
 }
