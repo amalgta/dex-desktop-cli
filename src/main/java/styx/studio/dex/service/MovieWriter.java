@@ -51,12 +51,14 @@ public class MovieWriter {
           new StringTemplate.StringTemplateBuilder()
               .template(outputFolderStructure)
               .addMapper(metadataMapper)
+              .removeAll("[:\\\\/*?|<>]")
               .build()
               .get();
       String duplicateRelativeDirectory =
           new StringTemplate.StringTemplateBuilder()
               .template(duplicateFolderStructure)
               .addMapper(metadataMapper)
+              .removeAll("[:\\\\/*?|<>]")
               .build()
               .get();
       String duplicateCompleteDirectory =

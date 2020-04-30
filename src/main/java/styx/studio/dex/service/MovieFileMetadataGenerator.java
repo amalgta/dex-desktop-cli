@@ -95,6 +95,7 @@ public class MovieFileMetadataGenerator {
     translation.put("ta", "Tamil");
     translation.put("te", "Telugu");
     translation.put("hi", "Hindi");
+    translation.put("kn", "Kannada");
     if (translation.containsKey(originalLanguage)) {
       return translation.get(originalLanguage);
     }
