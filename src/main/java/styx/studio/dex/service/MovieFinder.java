@@ -24,6 +24,9 @@ public class MovieFinder {
   @Value("${dex.file-types}")
   private List<String> supportedFileFormats;
 
+  @Value("${dex.language}")
+  private String language;
+
   @Autowired private MovieFileMetadataGenerator metadataGenerator;
 
   public ErrorReport find(Path path, MovieCallBack movieCallBack) throws IOException {
@@ -41,7 +44,7 @@ public class MovieFinder {
                 errorReport.report(ErrorCode.InvalidExtension, file);
                 return;
               }
-              MovieFileMetadata metadata = metadataGenerator.generateMetadata(file);
+              MovieFileMetadata metadata = metadataGenerator.generateMetadata(file, language);
               if (metadata != null) {
                 movieCallBack.onMovieFile(file, metadata);
               } else {

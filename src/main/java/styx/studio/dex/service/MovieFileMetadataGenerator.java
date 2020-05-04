@@ -1,10 +1,11 @@
 package styx.studio.dex.service;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.uwetrottmann.tmdb2.entities.BaseMovie;
 import com.uwetrottmann.tmdb2.entities.MovieResultsPage;
 import com.uwetrottmann.tmdb2.services.SearchService;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class MovieFileMetadataGenerator {
   @Autowired private SearchService searchService;
   @Autowired private JaroWinklerDistance jaroWinklerDistance;
 
-  public MovieFileMetadata generateMetadata(File file) {
+  public MovieFileMetadata generateMetadata(File file, String language) {
     MovieFileMetadata metadata = null;
     Iterable<styx.studio.dex.domain.pattern.Pattern> pattern = patternRepository.findAll();
     for (styx.studio.dex.domain.pattern.Pattern format : pattern) {
@@ -44,12 +45,18 @@ public class MovieFileMetadataGenerator {
       return null;
     }
     metadata.setFileExtension(FilenameUtils.getExtension(file.getName()));
-
+    metadata.setOriginalLanguage(getOriginalLanguage(language));
     try {
       Response<MovieResultsPage> response =
           searchService
               .movie(
-                  metadata.getTitle(), null, "", "", false, metadata.getYear(), metadata.getYear())
+                  metadata.getTitle(),
+                  null,
+                  metadata.getOriginalLanguage(),
+                  "",
+                  false,
+                  metadata.getYear(),
+                  metadata.getYear())
               .execute();
       if (response.isSuccessful()) {
         MovieFileMetadata finalMetadata = metadata;
@@ -89,7 +96,7 @@ public class MovieFileMetadataGenerator {
   }
 
   private String getOriginalLanguage(String originalLanguage) {
-    HashMap<String, String> translation = new HashMap<>();
+    BiMap<String, String> translation = HashBiMap.create();
     translation.put("en", "English");
     translation.put("ml", "Malayalam");
     translation.put("ta", "Tamil");
@@ -98,6 +105,9 @@ public class MovieFileMetadataGenerator {
     translation.put("kn", "Kannada");
     if (translation.containsKey(originalLanguage)) {
       return translation.get(originalLanguage);
+    }
+    if (translation.containsValue(originalLanguage)) {
+      return translation.inverse().get(originalLanguage);
     }
     return null;
   }
